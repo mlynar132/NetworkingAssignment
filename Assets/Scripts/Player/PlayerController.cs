@@ -19,7 +19,7 @@ public class PlayerController : NetworkBehaviour, IPlayerActions
 
     public UnityAction<bool> onFireEvent;
 
-    public UnityAction<bool> onFireHomingEvent;
+    public UnityAction<bool, ulong> onFireHomingEvent;
 
     [Header("Settings")]
     [SerializeField] private float movementSpeed = 5f;
@@ -89,11 +89,11 @@ public class PlayerController : NetworkBehaviour, IPlayerActions
     {
         if (context.performed)
         {
-            onFireEvent.Invoke(true);
+            onFireHomingEvent.Invoke(true, NetworkObjectId);
         }
         else if (context.canceled)
         {
-            onFireEvent.Invoke(false);
+            onFireHomingEvent.Invoke(false, NetworkObjectId);
         }
     }
 }
