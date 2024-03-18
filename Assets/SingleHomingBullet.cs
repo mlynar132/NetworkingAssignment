@@ -9,11 +9,15 @@ public class SingleHomingBullet : MonoBehaviour
     [SerializeField] int bulletSpeed = 10;
     [SerializeField] int rotationSpeed = 200;
     [SerializeField] float lifeSpan = 2;
-
+    [SerializeField] float freezeTime = 2;
+    
     [HideInInspector] public ulong ownerId;
-    GameObject owner;
-    List<GameObject> players = new List<GameObject>();
-    ContactFilter2D contactFilter = new ContactFilter2D().NoFilter();
+    
+    private bool isFreezed = true;
+    private GameObject owner;
+    private GameObject target;
+    private List<GameObject> players = new List<GameObject>();
+    private ContactFilter2D contactFilter = new ContactFilter2D().NoFilter();
     void Start()
     {
         PlayerController[] playersTemp;
@@ -27,14 +31,14 @@ public class SingleHomingBullet : MonoBehaviour
             }
             players.Add(player.gameObject);
         }
-        rb.velocity = transform.up * bulletSpeed;
+        Invoke("DelayedStart", freezeTime);
         Invoke("KillBullet", lifeSpan);
     }
     void FixedUpdate()
     {
-        if (players.Count > 0)
+        if (!isFreezed && players.Count > 0)
         {
-            GameObject target = new GameObject();
+            target = null;
             foreach (GameObject player in players)
             {
                 if (player == null)
@@ -78,6 +82,11 @@ public class SingleHomingBullet : MonoBehaviour
         }
     }
 
+    void DelayedStart()
+    {
+        rb.velocity = transform.up * bulletSpeed;
+        isFreezed = false;
+    }
     void KillBullet()
     {
         if (gameObject) Destroy(gameObject);

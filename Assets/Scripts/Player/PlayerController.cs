@@ -44,10 +44,16 @@ public class PlayerController : NetworkBehaviour, IPlayerActions
         if (turretPivotTransform == null) Debug.LogError("PivotTurret is not found", gameObject);
     }
 
+    public override void OnDestroy()
+    {
+        if (_playerInput != null && IsOwner)
+        {
+            _playerInput.Player.RemoveCallbacks(this);
+            _playerInput.Player.Disable();
+        }
 
-
-
-
+        base.OnDestroy();
+    }
     public void OnFire(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
         if (context.performed)
